@@ -5,7 +5,7 @@ import { platformClientHeaders, type AccountClientMetadata } from '@deepseek-ai/
 
 /** Installed release identity; no field is supplied by a renderer. */
 export interface DesktopPolicyIdentity {
-  readonly platform: 'win32' | 'darwin'
+  readonly platform: 'win32' | 'darwin' | 'linux'
   readonly bundledDshVersion: string
   readonly arch: 'x64' | 'arm64'
 }
@@ -157,7 +157,7 @@ export class DesktopMandatoryUpdatePolicy {
   /** Platform headers for one check; the calling UI's language and UTC offset are read now. */
   private requestHeaders(): Record<string, string> {
     return {
-      ...platformClientHeaders(this.identity.platform, this.client()),
+      ...platformClientHeaders(this.identity.platform === 'linux' ? null : this.identity.platform, this.client()),
       'x-client-arch': this.identity.arch, 'x-client-update-channel': 'nightly',
       'x-client-bundled-dsh-version': this.identity.bundledDshVersion,
     }

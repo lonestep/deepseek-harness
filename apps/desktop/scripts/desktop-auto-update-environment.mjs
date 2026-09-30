@@ -22,7 +22,7 @@ const UPDATE_ENVIRONMENTS = {
   },
 }
 
-const UPDATE_TARGETS = new Set(['mac-arm64', 'mac-x64', 'win-x64'])
+const UPDATE_TARGETS = new Set(['mac-arm64', 'mac-x64', 'win-x64', 'linux-x64'])
 
 /**
  * Resolve the update deployment, defaulting local release work to test.
@@ -41,7 +41,7 @@ export function resolveDesktopAutoUpdateEnvironment(env) {
  * Resolve one supported platform and architecture to its update directory.
  * @param {NodeJS.Platform} platform - Target Node.js platform.
  * @param {string} arch - Target Node.js architecture.
- * @returns {'mac-arm64' | 'mac-x64' | 'win-x64'} Update target directory.
+ * @returns {'mac-arm64' | 'mac-x64' | 'win-x64' | 'linux-x64'} Update target directory.
  */
 export function resolveDesktopAutoUpdateTarget(platform, arch) {
   const os = platform === 'darwin' ? 'mac' : platform === 'win32' ? 'win' : platform
@@ -74,10 +74,10 @@ export function desktopUpdateMetadataFilename(version, platform) {
   if (valid(version) === null) {
     throw new Error(`desktop auto-update: invalid Desktop version ${JSON.stringify(version)}`)
   }
-  if (platform !== 'darwin' && platform !== 'win32') {
+  if (platform !== 'darwin' && platform !== 'win32' && platform !== 'linux') {
     throw new Error(`desktop auto-update: unsupported metadata platform ${platform}`)
   }
-  return `nightly${platform === 'darwin' ? '-mac' : ''}.yml`
+  return `nightly${platform === 'darwin' ? '-mac' : platform === 'linux' ? '-linux' : ''}.yml`
 }
 
 /**

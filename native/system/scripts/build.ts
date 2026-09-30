@@ -32,7 +32,11 @@ const host = `${process.platform}-${process.arch}`
 const libc = process.platform === 'linux'
   ? ((process.report.getReport() as { header: { glibcVersionRuntime?: string } }).header.glibcVersionRuntime ? 'glibc' : 'musl')
   : undefined
-const headers = resolve(dirname(process.execPath), '../include/node')
+const defaultHeaders = resolve(dirname(process.execPath), '../include/node')
+const headers = process.env.NODE_API_HEADERS
+  ?? (existsSync(join(defaultHeaders, 'node_api.h'))
+    ? defaultHeaders
+    : resolve(process.env.HOME ?? '', '.local/include/node'))
 let built = 0
 
 for (const name of readdirSync(join(root, 'packages')).sort()) {

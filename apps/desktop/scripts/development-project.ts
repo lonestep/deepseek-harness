@@ -12,12 +12,15 @@ import {
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+
 import { createDevelopmentProjectMetadata } from '../src/project-manager.ts'
 import type { DesktopRelease } from '../src/release.ts'
 import { DESKTOP_RUNTIME_FILE, type DesktopRuntimeDescriptor } from '../src/runtime-tree.ts'
 import type { DesktopAutoUpdateTarget } from './desktop-auto-update-environment.mjs'
 import { desktopTargetPlatform } from './desktop-build-paths.mjs'
+
+const REPOSITORY_ROOT = resolve(import.meta.dirname, '..', '..', '..')
 
 interface PackageManifest {
   readonly name?: string
@@ -102,7 +105,10 @@ function mirrorWorkspaceDependencies(roots: readonly string[], destinationRoot: 
     const manifest = readManifest(join(source, 'package.json'))
     for (const [name, specifier] of Object.entries(manifest.dependencies ?? {})) {
       if (!specifier.startsWith('workspace:')) continue
-      const dependency = join(source, 'node_modules', ...name.split('/'))
+      let dependency = join(source, 'node_modules', ...name.split('/'))
+      if (!existsSync(dependency)) {
+        dependency = join(REPOSITORY_ROOT, 'node_modules', ...name.split('/'))
+      }
       if (!existsSync(dependency)) {
         throw new Error(`desktop development: ${name} is missing from ${source}; run pnpm install`)
       }
