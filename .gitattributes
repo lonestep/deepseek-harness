@@ -5,7 +5,6 @@
 # override after the default keeps the in-repo form normalized as text.
 * text=auto eol=lf
 *.cmd text eol=crlf
-
 *.pdf binary
 
 # The persistence catalog is the readable projection of these generated schemas.
@@ -13,3 +12,6 @@ docs/persistence-schema.json linguist-generated=true
 docs/persistence-changes/*.schema.json linguist-generated=true
 docs/persistence-changes/releases/*.schema.json linguist-generated=true
 docs/persistence-changes/historical-formats/*.schema.json linguist-generated=true
+
+# Git LFS
+*.rpm filter=lfs diff=lfs merge=lfs -text
